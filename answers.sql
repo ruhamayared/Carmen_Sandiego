@@ -29,7 +29,7 @@ SELECT population, name FROM country WHERE region = 'Southern Europe' ORDER BY p
 
 --  population |             name              
 -- ------------+-------------------------------
---        1000 | Holy See (Vatican City State)      *** This is where Carmen Sandiego is! ***
+--        1000 | Holy See (Vatican City State)      *** Carmen Sandiego is in the Holy See! ***
 --       25000 | Gibraltar
 --       27000 | San Marino
 --       78000 | Andorra
@@ -63,7 +63,7 @@ SELECT countrycode, language, percentage, isofficial FROM countrylanguage WHERE 
 --  countrycode | language | percentage | isofficial 
 -- -------------+----------+------------+------------
 --  ITA         | Italian  |       94.1 | t
---  SMR         | Italian  |        100 | t        *** She is in San Marino ***
+--  SMR         | Italian  |        100 | t        *** She is in San Marino! ***
 --  VAT         | Italian  |          0 | t
 --  CHE         | Italian  |        7.7 | t
 -- (4 rows)
@@ -72,16 +72,48 @@ SELECT countrycode, language, percentage, isofficial FROM countrylanguage WHERE 
 
 -- Clue #4: We're booking the first flight out – maybe we've actually got a chance to catch her this time. There are only two cities she could be flying to in the country. One is named the same as the country – that would be too obvious. We're following our gut on this one; find out what other city in that country she might be flying to.
 
+SELECT * FROM city WHERE countrycode = 'SMR';
+
+--  id  |    name    | countrycode |     district      | population 
+-- ------+------------+-------------+-------------------+------------
+--  3170 | Serravalle | SMR         | Serravalle/Dogano |       4802     *** She's flying to Serravalle! ***
+--  3171 | San Marino | SMR         | San Marino        |       2294
+-- (2 rows)
 
 
 
 -- Clue #5: Oh no, she pulled a switch – there are two cities with very similar names, but in totally different parts of the globe! She's headed to South America as we speak; go find a city whose name is like the one we were headed to, but doesn't end the same. Find out the city, and do another search for what country it's in. Hurry!
 
+SELECT * FROM city WHERE name LIKE 'Serr%';
 
+--   id  |    name    | countrycode |     district      | population 
+-- ------+------------+-------------+-------------------+------------
+--   265 | Serra      | BRA         | Espï¿½rito Santo  |     302666       *** She's actually flying to Serra! ***
+--  3170 | Serravalle | SMR         | Serravalle/Dogano |       4802
+-- (2 rows)
 
+SELECT name FROM country WHERE code = 'BRA';
+
+--   name  
+-- --------
+--  Brazil        *** Which is in Brazil! ***
+-- (1 row)
 
 -- Clue #6: We're close! Our South American agent says she just got a taxi at the airport, and is headed towards the capital! Look up the country's capital, and get there pronto! Send us the name of where you're headed and we'll follow right behind you!
 
+SELECT name, capital FROM country WHERE code = 'BRA';
+
+--   name  | capital 
+-- --------+---------
+--  Brazil |     211
+-- (1 row)
+
+SELECT * FROM city WHERE countrycode = 'BRA' and id = 211;
+
+--  id  |    name    | countrycode |     district     | population 
+-- -----+------------+-------------+------------------+------------ 
+--  211 | Brasï¿½lia | BRA         | Distrito Federal |    1969868        *** She's headed to Brasilia! ***
+-- (1 row)
 
 
 
@@ -99,7 +131,13 @@ SELECT countrycode, language, percentage, isofficial FROM countrylanguage WHERE 
 
 -- We're counting on you, gumshoe. Find out where she's headed, send us the info, and we'll be sure to meet her at the gates with bells on.
 
+SELECT * FROM city WHERE population = 91084;
+
+--   id  |     name     | countrycode |  district  | population 
+-- ------+--------------+-------------+------------+------------
+--  4060 | Santa Monica | USA         | California |      91084
+-- (1 row)
 
 
 
--- She's in ____________________________!
+-- She's in ______Santa Monica______!
